@@ -1,0 +1,106 @@
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+public class PhoneBook {
+    private final Map<String, String> phoneBook;
+
+    public PhoneBook() {
+        this.phoneBook = new HashMap<>();
+    }
+
+    public void addUser(String name, String phoneNumber) {
+        if (!phoneBook.containsKey(name)) {
+            phoneBook.put(name, phoneNumber);
+        } else {
+            throw new IllegalArgumentException("Użytkownik o podanej nazwie już istnieje.");
+        }
+    }
+
+    public Optional<String> findPhoneNumberByName(String name) {
+        return Optional.ofNullable(phoneBook.get(name));
+    }
+
+    public Optional<String> findNameByPhoneNumber(String phoneNumber) {
+        for (Map.Entry<String, String> entry : phoneBook.entrySet()) {
+            if (entry.getValue().equals(phoneNumber)) {
+                return Optional.of(entry.getKey());
+            }
+        }
+        return Optional.empty();
+    }
+
+    public String getPhoneNumberByName(String name) {
+        String phoneNumber = phoneBook.get(name);
+        if (phoneNumber == null) {
+            throw new IllegalArgumentException("Użytkownik o podanej nazwie nie istnieje.");
+        }
+        return phoneNumber;
+    }
+
+    public int countNumbersEndingWith(String endingSequence) {
+        int count = 0;
+        for (String phoneNumber : phoneBook.values()) {
+            if (phoneNumber.endsWith(endingSequence)) {
+                count++;
+            }
+        }
+        return count;
+    }
+}
+
+import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+public class PhoneBookTest {
+
+    @Test
+    void testAddUser() {
+        PhoneBook phoneBook = new PhoneBook();
+        phoneBook.addUser("John", "123456789");
+        phoneBook.addUser("Alice", "987654321");
+        assertEquals(2, phoneBook.countNumbersEndingWith("789"));
+    }
+
+    @Test
+    void testFindPhoneNumberByName() {
+        PhoneBook phoneBook = new PhoneBook();
+        phoneBook.addUser("John", "123456789");
+        Optional<String> phoneNumber = phoneBook.findPhoneNumberByName("John");
+        assertEquals("123456789", phoneNumber.orElse(null));
+    }
+
+    @Test
+    void testFindNameByPhoneNumber() {
+        PhoneBook phoneBook = new PhoneBook();
+        phoneBook.addUser("John", "123456789");
+        Optional<String> name = phoneBook.findNameByPhoneNumber("123456789");
+        assertEquals("John", name.orElse(null));
+    }
+
+    @Test
+    void testGetPhoneNumberByName() {
+        PhoneBook phoneBook = new PhoneBook();
+        phoneBook.addUser("John", "123456789");
+        assertEquals("123456789", phoneBook.getPhoneNumberByName("John"));
+    }
+
+    @Test
+    void testGetPhoneNumberByNameThrowsException() {
+        PhoneBook phoneBook = new PhoneBook();
+        phoneBook.addUser("John", "123456789");
+        assertThrows(IllegalArgumentException.class, () -> phoneBook.getPhoneNumberByName("Alice"));
+    }
+
+    @Test
+    void testCountNumbersEndingWith() {
+        PhoneBook phoneBook = new PhoneBook();
+        phoneBook.addUser("John", "123456789");
+        phoneBook.addUser("Alice", "987654321");
+        assertEquals(1, phoneBook.countNumbersEndingWith("789"));
+    }
+}
