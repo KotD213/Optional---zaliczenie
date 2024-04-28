@@ -1,0 +1,50 @@
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+public class PhoneBook {
+    private final Map<String, String> phoneBook;
+
+    public PhoneBook() {
+        this.phoneBook = new HashMap<>();
+    }
+
+    public void addUser(String name, String phoneNumber) {
+        if (!phoneBook.containsKey(name)) {
+            phoneBook.put(name, phoneNumber);
+        } else {
+            System.out.println("Użytkownik o podanej nazwie już istnieje.");
+        }
+    }
+
+    public Optional<String> findPhoneNumberByName(String name) {
+        return Optional.ofNullable(phoneBook.get(name));
+    }
+
+    public Optional<String> findNameByPhoneNumber(String phoneNumber) {
+        for (Map.Entry<String, String> entry : phoneBook.entrySet()) {
+            if (entry.getValue().equals(phoneNumber)) {
+                return Optional.of(entry.getKey());
+            }
+        }
+        return Optional.empty();
+    }
+
+    public String getPhoneNumberByName(String name) {
+        String phoneNumber = phoneBook.get(name);
+        if (phoneNumber == null) {
+            throw new IllegalArgumentException("Użytkownik o podanej nazwie nie istnieje.");
+        }
+        return phoneNumber;
+    }
+
+    public int countNumbersEndingWith(String endingSequence) {
+        int count = 0;
+        for (String phoneNumber : phoneBook.values()) {
+            if (phoneNumber.endsWith(endingSequence)) {
+                count++;
+            }
+        }
+        return count;
+    }
+}
